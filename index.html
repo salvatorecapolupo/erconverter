@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertitore Numerico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        input, select, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output, .steps {
+            background: #444;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+    <h1>Er Converter 1.0</h1>
+    <div class="container">
+        <img src="erconverter.webp" alt="er converter logo" style="height:160px;"/>
+        <input type="text" id="inputNumber" placeholder="Inserisci numero">
+        <select id="fromBase">
+            <option value="2">Binario (Base 2)</option>
+            <option value="10" selected>Decimale (Base 10)</option>
+            <option value="16">Esadecimale (Base 16)</option>
+        </select>
+        <select id="toBase">
+            <option value="2">Binario (Base 2)</option>
+            <option value="10">Decimale (Base 10)</option>
+            <option value="16" selected>Esadecimale (Base 16)</option>
+        </select>
+        <button onclick="convert()">Converti</button>
+        <div class="output" id="output"></div>
+        <div class="steps" id="steps"></div>
+    </div>
+    
+    <script>
+        function convert() {
+            let input = document.getElementById("inputNumber").value.trim();
+            let fromBase = parseInt(document.getElementById("fromBase").value);
+            let toBase = parseInt(document.getElementById("toBase").value);
+            
+            if (!input.match(/^[0-9A-Fa-f]+$/)) {
+                document.getElementById("output").innerText = "Errore: Inserisci un numero valido.";
+                document.getElementById("steps").innerText = "";
+                return;
+            }
+            
+            let decimalValue = parseInt(input, fromBase);
+            let result = decimalValue.toString(toBase).toUpperCase();
+            let steps = `Conversione da base ${fromBase} a base ${toBase}:\n`;
+            
+            let value = decimalValue;
+            let divisionSteps = "";
+            let remainders = [];
+            while (value > 0) {
+                let remainder = value % toBase;
+                remainders.unshift(remainder);
+                divisionSteps += `${value} ÷ ${toBase} = ${Math.floor(value / toBase)} con resto ${remainder} (${remainder < 10 ? remainder : String.fromCharCode(55 + remainder)})\n`;
+                value = Math.floor(value / toBase);
+            }
+            
+            let convertedValue = remainders.map(r => r < 10 ? r : String.fromCharCode(55 + r)).join('');
+            steps += divisionSteps + `\nRisultato finale: ${convertedValue}`;
+            
+            if (toBase === 16) {
+                result = "0x" + result + " (o " + result + "h in Assembly)";
+            }
+            
+            document.getElementById("output").innerText = `Risultato: ${result}`;
+            document.getElementById("steps").innerText = steps;
+        }
+    </script>
+</body>
+</html>
